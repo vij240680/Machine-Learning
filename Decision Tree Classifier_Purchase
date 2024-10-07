@@ -1,0 +1,24 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.metrics import classification_report, accuracy_score
+import matplotlib.pyplot as plt
+
+df = pd.read_csv(r'C:\\Python projects\\Input\\Input_DecisionTree.csv')
+X = df[['Age', 'Income','Sex','Marital Status']]
+y = df['Purchase']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_state=42)
+model = DecisionTreeClassifier(random_state=42)
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+print("Accuracy on Test Set:", accuracy_score(y_test, y_pred))
+print("\nClassification Report on Test Set:")
+print(classification_report(y_test, y_pred))
+plt.figure(figsize=(12, 8))
+plot_tree(model, feature_names=['Age', 'Income','Sex','Marital Status'], class_names=['No', 'Yes'], filled=True)
+plt.show()
+new_data = pd.DataFrame({'Age': [30], 'Income': [50000],'Sex':[1],'Marital Status':['0']})
+prediction = model.predict(new_data)
+probability = model.predict_proba(new_data)
+print(f"Prediction (1 = Purchase, 0 = No Purchase): {prediction[0]}")
+print(f"Probability of Purchase: {probability[0][1]:.2f}")
