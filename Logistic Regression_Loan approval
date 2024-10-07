@@ -1,0 +1,51 @@
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split, cross_val_score, StratifiedKFold
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, classification_report
+df = pd.read_csv(r'C:\\Python projects\\Input\\Input_LogisticRegression.csv')
+
+X = df[['Credit Score', 'Annual Income', 'Debt-to-Income Ratio', 'Loan Amount']]
+y = df['Loan Approval']
+
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42, stratify=y)
+
+
+model = LogisticRegression()
+model.fit(X_train, y_train)
+
+
+y_pred_train = model.predict(X_train)
+y_pred_test = model.predict(X_test)
+
+train_accuracy = accuracy_score(y_train, y_pred_train)
+test_accuracy = accuracy_score(y_test, y_pred_test)
+
+print("Training Accuracy:", train_accuracy)
+print("Test Accuracy:", test_accuracy)
+
+
+cv = StratifiedKFold(n_splits=3)
+cv_scores = cross_val_score(model, X, y, cv=cv)
+
+print("Cross-Validation Scores:", cv_scores)
+print("Mean Cross-Validation Score:", np.mean(cv_scores))
+
+
+print("Classification Report on Test Set:")
+print(classification_report(y_test, y_pred_test, zero_division=1))
+
+
+known_features = pd.DataFrame([[750, 100000, 20, 250000]], 
+                              columns=['Credit Score', 'Annual Income', 'Debt-to-Income Ratio', 'Loan Amount'])
+
+prediction = model.predict(known_features)
+probability = model.predict_proba(known_features)
+
+print(f"Prediction (1 = Approve, 0 = Decline): {prediction[0]}")
+print(f"Probability of Approval: {probability[0][1]:.2f}")
+
+
+
+
